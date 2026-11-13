@@ -120,7 +120,7 @@ serenity-system/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/serenity-system.git
+git clone https://github.com/grsimon815-ship-it/serenity-system.git
 cd serenity-system
 ```
 
