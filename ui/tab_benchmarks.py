@@ -42,8 +42,8 @@ class BenchmarkRadarTab(QWidget):
         radar_layout.addWidget(lbl_chart_header)
 
         self.figure, self.ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(polar=True))
-        self.figure.patch.set_facecolor("#0b1120")
-        self.ax.set_facecolor("#080c14")
+        self.figure.patch.set_facecolor("#0c0e15")
+        self.ax.set_facecolor("#08090d")
 
         self.canvas = FigureCanvas(self.figure)
         radar_layout.addWidget(self.canvas)

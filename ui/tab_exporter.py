@@ -20,7 +20,7 @@ class ExporterTab(QWidget):
 
         # Control Bar
         top_bar = QFrame()
-        top_bar.setStyleSheet("background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 6px;")
+        top_bar.setStyleSheet("background-color: #0e1119; border: 1px solid #181b26; border-radius: 9px; padding: 6px;")
         top_layout = QHBoxLayout(top_bar)
         top_layout.setContentsMargins(8, 6, 8, 6)
 

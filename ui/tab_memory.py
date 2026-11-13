@@ -14,9 +14,9 @@ class MemoryVisualizerWidget(QGraphicsView):
         super().__init__(parent)
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
-        self.setBackgroundBrush(QBrush(QColor("#080c14")))
+        self.setBackgroundBrush(QBrush(QColor("#08090d")))
         self.setRenderHint(self.renderHints())
-        self.setStyleSheet("border: 1px solid #1e293b; border-radius: 8px;")
+        self.setStyleSheet("border: 1px solid #181b26; border-radius: 9px;")
 
     def render_step(self, step):
         self.scene.clear()
@@ -128,7 +128,7 @@ class MemorySimulatorTab(QWidget):
 
         # Control Bar
         top_bar = QFrame()
-        top_bar.setStyleSheet("background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 6px;")
+        top_bar.setStyleSheet("background-color: #0e1119; border: 1px solid #181b26; border-radius: 9px; padding: 6px;")
         top_layout = QHBoxLayout(top_bar)
         top_layout.setContentsMargins(8, 6, 8, 6)
 
