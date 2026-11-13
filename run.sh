@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-echo "Starting PolyglotForge Studio..."
+echo "Starting Serenity System..."
 python3 main.py "$@"

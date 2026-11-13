@@ -17,8 +17,8 @@ def main():
     )
     
     app = QApplication(sys.argv)
-    app.setApplicationName("PolyglotForge")
-    app.setOrganizationName("OpenPolyglot")
+    app.setApplicationName("SerenitySystem")
+    app.setOrganizationName("SerenitySystem")
     
     window = MainWindow()
     window.show()

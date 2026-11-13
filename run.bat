@@ -1,8 +1,6 @@
 @echo off
-title PolyglotForge Studio
-echo ========================================================
-echo       Launching PolyglotForge Architecture Studio
-echo ========================================================
+title Serenity System
+echo Starting Serenity System...
 python main.py
 if errorlevel 1 (
     echo.

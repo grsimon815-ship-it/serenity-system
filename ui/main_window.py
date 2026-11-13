@@ -1,15 +1,14 @@
 import shutil
 import os
 import platform
-import sys
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
     QStackedWidget, QStatusBar, QFrame, QPushButton, QLineEdit
 )
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QIcon, QFont, QColor, QKeySequence, QShortcut
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QKeySequence, QShortcut
 
-from ui.theme import SYSTEM_DLC_THEME
+from ui.theme import SERENITY_THEME
 from ui.tab_matrix import ParadigmMatrixTab
 from ui.tab_memory import MemorySimulatorTab
 from ui.tab_patterns import PatternLabTab
@@ -20,17 +19,16 @@ from ui.tab_exporter import ExporterTab
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SystemDLC — Polyglot Architecture & Execution Workbench")
-        self.resize(1320, 840)
-        self.setMinimumSize(1060, 680)
+        self.setWindowTitle("Serenity System")
+        self.resize(1300, 820)
+        self.setMinimumSize(1020, 660)
 
         self._nav_buttons = []
         self._init_ui()
-        self._check_system_runtimes()
         self._init_shortcuts()
 
     def _init_ui(self):
-        self.setStyleSheet(SYSTEM_DLC_THEME)
+        self.setStyleSheet(SERENITY_THEME)
 
         central_widget = QWidget()
         central_widget.setObjectName("CentralWidget")
@@ -40,110 +38,49 @@ class MainWindow(QMainWindow):
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
 
-        # 1. Left Vertical Navigation Sidebar
+        # Left Navigation Sidebar
         sidebar = QFrame()
         sidebar.setObjectName("SidebarFrame")
-        sidebar.setFixedWidth(205)
+        sidebar.setFixedWidth(180)
         sidebar_layout = QVBoxLayout(sidebar)
-        sidebar_layout.setContentsMargins(10, 14, 10, 12)
+        sidebar_layout.setContentsMargins(10, 14, 10, 14)
         sidebar_layout.setSpacing(4)
 
-        # Brand Header
-        brand_frame = QFrame()
-        brand_layout = QVBoxLayout(brand_frame)
-        brand_layout.setContentsMargins(2, 0, 2, 8)
-        brand_layout.setSpacing(1)
-
-        brand_row = QHBoxLayout()
-        lbl_brand = QLabel("SYSTEM DLC")
+        # Brand Title
+        lbl_brand = QLabel("SERENITY SYSTEM")
         lbl_brand.setObjectName("LogoTitle")
-        brand_row.addWidget(lbl_brand)
-        brand_row.addStretch()
-        brand_layout.addLayout(brand_row)
+        sidebar_layout.addWidget(lbl_brand)
+        sidebar_layout.addSpacing(10)
 
-        lbl_sub = QLabel("POLYGLOT WORKBENCH")
-        lbl_sub.setObjectName("LogoSubtitle")
-        brand_layout.addWidget(lbl_sub)
-        sidebar_layout.addWidget(brand_frame)
-
-        # Section 1: Analysis
-        lbl_sec1 = QLabel("ARCHITECTURE")
-        lbl_sec1.setObjectName("SidebarCategoryHeader")
-        sidebar_layout.addWidget(lbl_sec1)
-
-        self._add_nav_item(sidebar_layout, "[01] Paradigms", 0)
-        self._add_nav_item(sidebar_layout, "[02] Memory Engine", 1)
-        self._add_nav_item(sidebar_layout, "[03] Design Patterns", 2)
-
-        # Section 2: Execution & Output
-        lbl_sec2 = QLabel("RUNTIMES & OUTPUT")
-        lbl_sec2.setObjectName("SidebarCategoryHeader")
-        sidebar_layout.addWidget(lbl_sec2)
-
-        self._add_nav_item(sidebar_layout, "[04] Playground", 3)
-        self._add_nav_item(sidebar_layout, "[05] Benchmarks", 4)
-        self._add_nav_item(sidebar_layout, "[06] Export Docs", 5)
+        # Direct, functional navigation buttons
+        self._add_nav_item(sidebar_layout, "Paradigms", 0)
+        self._add_nav_item(sidebar_layout, "Memory", 1)
+        self._add_nav_item(sidebar_layout, "Patterns", 2)
+        self._add_nav_item(sidebar_layout, "Playground", 3)
+        self._add_nav_item(sidebar_layout, "Metrics", 4)
+        self._add_nav_item(sidebar_layout, "Export", 5)
 
         sidebar_layout.addStretch()
-
-        # Telemetry Card in Sidebar Footer
-        telemetry_card = QFrame()
-        telemetry_card.setObjectName("TelemetryFrame")
-        telem_layout = QVBoxLayout(telemetry_card)
-        telem_layout.setContentsMargins(6, 6, 6, 6)
-        telem_layout.setSpacing(2)
-
-        pid = os.getpid()
-        lbl_telem_status = QLabel("CLIENT CORE :: ACTIVE")
-        lbl_telem_status.setStyleSheet("font-size: 9px; font-weight: 700; color: #10b981; font-family: 'Consolas', monospace;")
-        telem_layout.addWidget(lbl_telem_status)
-
-        self.lbl_telem_info = QLabel(f"PID: {pid} | Arch: x86_64\nPython: 3.14.7 | V8: Node 24")
-        self.lbl_telem_info.setObjectName("TelemetryText")
-        telem_layout.addWidget(self.lbl_telem_info)
-
-        sidebar_layout.addWidget(telemetry_card)
         root_layout.addWidget(sidebar)
 
-        # 2. Right Workspace (Header + Stack)
+        # Right Workspace
         workspace = QFrame()
         workspace_layout = QVBoxLayout(workspace)
         workspace_layout.setContentsMargins(0, 0, 0, 0)
         workspace_layout.setSpacing(0)
 
-        # Top Header Bar
+        # Top Header Bar (Search input)
         top_header = QFrame()
         top_header.setObjectName("TopHeaderBar")
         top_header_layout = QHBoxLayout(top_header)
-        top_header_layout.setContentsMargins(14, 6, 14, 6)
+        top_header_layout.setContentsMargins(14, 8, 14, 8)
         top_header_layout.setSpacing(10)
 
         self.search_bar = QLineEdit()
         self.search_bar.setObjectName("SearchBar")
-        self.search_bar.setPlaceholderText("Filter (Ctrl+F) ... [e.g. 'async', 'borrow', 'circuit', 'primes']")
+        self.search_bar.setPlaceholderText("Search paradigms, memory models, patterns (Ctrl+F)...")
         self.search_bar.textChanged.connect(self._on_search_query)
         top_header_layout.addWidget(self.search_bar, 1)
-
-        # Target indicators
-        badge_row = QHBoxLayout()
-        badge_row.setSpacing(6)
-        badges = [("RUST", "#f97316"), ("GO", "#06b6d4"), ("TS", "#38bdf8"), ("PY", "#eab308"), ("JAVA", "#ef4444"), ("C++", "#a855f7")]
-        for name, col in badges:
-            lbl_b = QLabel(name)
-            lbl_b.setStyleSheet(f"""
-                QLabel {{
-                    background-color: #12131a;
-                    color: {col};
-                    border: 1px solid #1f212c;
-                    border-radius: 3px;
-                    padding: 2px 6px;
-                    font-size: 9px;
-                    font-weight: 700;
-                    font-family: 'Consolas', monospace;
-                }}
-            """)
-            badge_row.addWidget(lbl_b)
-        top_header_layout.addLayout(badge_row)
 
         workspace_layout.addWidget(top_header)
 
@@ -170,16 +107,15 @@ class MainWindow(QMainWindow):
         # Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+        self.status_bar.showMessage("Ready")
 
         self._switch_page(0)
 
     def _init_shortcuts(self):
-        # Quick Tab Switching with Ctrl+1 through Ctrl+6
         for i in range(6):
             shortcut = QShortcut(QKeySequence(f"Ctrl+{i+1}"), self)
             shortcut.activated.connect(lambda idx=i: self._switch_page(idx))
         
-        # Search Shortcut: Ctrl+F focuses search input
         shortcut_f = QShortcut(QKeySequence("Ctrl+F"), self)
         shortcut_f.activated.connect(lambda: self.search_bar.setFocus())
 
@@ -218,17 +154,3 @@ class MainWindow(QMainWindow):
             self._switch_page(5)
         else:
             self._switch_page(0)
-
-    def _check_system_runtimes(self):
-        has_python = shutil.which("python") is not None
-        has_node = shutil.which("node") is not None
-        has_javac = shutil.which("javac") is not None
-
-        status_text = (
-            f"SYSTEM DLC WORKBENCH | OS: {platform.system()} {platform.release()} | "
-            f"CPython 3.14.7 [OK] | "
-            f"V8 Node.js 24 [OK] | "
-            f"Java HotSpot JDK 21 [OK] | "
-            f"UTF-8 | CRLF"
-        )
-        self.status_bar.showMessage(status_text)

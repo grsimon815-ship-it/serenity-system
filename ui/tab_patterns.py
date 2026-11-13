@@ -14,20 +14,20 @@ class PatternGraphView(QGraphicsView):
         super().__init__(parent)
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
-        self.setBackgroundBrush(QBrush(QColor("#0a0b0e")))
-        self.setStyleSheet("border: 1px solid #1c1d27; border-radius: 6px;")
+        self.setBackgroundBrush(QBrush(QColor("#0d0e14")))
+        self.setStyleSheet("border: 1px solid #1e2029; border-radius: 6px;")
 
     def render_pattern(self, pattern: ArchitecturePattern, state_overrides=None):
         self.scene.clear()
         if not pattern:
             return
 
-        font_label = QFont("Consolas", 9, QFont.Weight.Bold)
-        font_sub = QFont("Consolas", 8)
+        font_label = QFont("Cascadia Code", 10, QFont.Weight.Bold)
+        font_sub = QFont("Cascadia Code", 9)
 
         status_colors = {
-            "idle": ("#111218", "#232532", "#6b7280"),
-            "active": ("#161926", "#38bdf8", "#38bdf8"),
+            "idle": ("#13151b", "#272a38", "#64748b"),
+            "active": ("#151b27", "#38bdf8", "#38bdf8"),
             "success": ("#062c21", "#059669", "#34d399"),
             "warning": ("#2e1f06", "#d97706", "#fbbf24"),
             "error": ("#2e0b11", "#e11d48", "#fb7185"),
@@ -39,7 +39,7 @@ class PatternGraphView(QGraphicsView):
             status = state_overrides.get(node.id, node.status) if state_overrides else node.status
             bg, border, text_col = status_colors.get(status, status_colors["idle"])
 
-            w, h = 130, 52
+            w, h = 135, 54
             x, y = node.x, node.y
             node_positions[node.id] = (x + w / 2, y + h / 2)
 
@@ -50,10 +50,10 @@ class PatternGraphView(QGraphicsView):
             t1.setPos(x + 6, y + 4)
 
             t2 = self.scene.addText(f"[{node.role}]", font_sub)
-            t2.setDefaultTextColor(QColor("#4b5263"))
+            t2.setDefaultTextColor(QColor("#475569"))
             t2.setPos(x + 6, y + 26)
 
-        pen_edge = QPen(QColor("#2d3142"), 1.2)
+        pen_edge = QPen(QColor("#33384a"), 1.2)
         for edge in pattern.edges:
             p1 = node_positions.get(edge.source_id)
             p2 = node_positions.get(edge.target_id)
@@ -62,7 +62,7 @@ class PatternGraphView(QGraphicsView):
                 mid_x = (p1[0] + p2[0]) / 2
                 mid_y = (p1[1] + p2[1]) / 2 - 8
                 t_edge = self.scene.addText(edge.label, font_sub)
-                t_edge.setDefaultTextColor(QColor("#6b7280"))
+                t_edge.setDefaultTextColor(QColor("#64748b"))
                 t_edge.setPos(mid_x - 30, mid_y)
 
 
@@ -79,38 +79,34 @@ class PatternLabTab(QWidget):
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(16, 14, 16, 14)
-        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(14, 12, 14, 12)
+        main_layout.setSpacing(8)
 
         # Top Bar
         top_bar = QFrame()
         top_bar.setProperty("class", "DlcCard")
-        top_bar.setStyleSheet("background-color: #0e0f14; border: 1px solid #1c1d27; border-radius: 6px; padding: 4px;")
         top_layout = QHBoxLayout(top_bar)
-        top_layout.setContentsMargins(8, 4, 8, 4)
-        top_layout.setSpacing(8)
+        top_layout.setContentsMargins(10, 6, 10, 6)
+        top_layout.setSpacing(10)
 
-        lbl_pattern = QLabel("Pattern:")
-        lbl_pattern.setStyleSheet("font-weight: 600; color: #9ca3af; font-size: 11px;")
-        top_layout.addWidget(lbl_pattern)
-
+        top_layout.addWidget(QLabel("Pattern:"))
         self.cb_pattern = QComboBox()
         for p in PATTERNS:
             self.cb_pattern.addItem(f"{p.name} ({p.category})", p.id)
         self.cb_pattern.currentIndexChanged.connect(self.on_pattern_changed)
         top_layout.addWidget(self.cb_pattern, 2)
 
-        top_layout.addSpacing(12)
+        top_layout.addSpacing(10)
 
-        self.btn_action_success = QPushButton("Invoke Request (200 OK)")
+        self.btn_action_success = QPushButton("Trigger Request (200)")
         self.btn_action_success.clicked.connect(self.simulate_success)
         top_layout.addWidget(self.btn_action_success)
 
-        self.btn_action_fail = QPushButton("Inject Fault (500 Error)")
+        self.btn_action_fail = QPushButton("Inject Fault (500)")
         self.btn_action_fail.clicked.connect(self.simulate_failure)
         top_layout.addWidget(self.btn_action_fail)
 
-        self.btn_action_reset = QPushButton("Reset State")
+        self.btn_action_reset = QPushButton("Reset Circuit")
         self.btn_action_reset.clicked.connect(self.simulate_reset)
         top_layout.addWidget(self.btn_action_reset)
 
@@ -118,64 +114,52 @@ class PatternLabTab(QWidget):
 
         # Body Splitter
         splitter = QSplitter(Qt.Orientation.Horizontal)
-        splitter.setHandleWidth(4)
+        splitter.setHandleWidth(6)
 
         # Left Column: Graph View + Console Log
         left_panel = QFrame()
-        left_panel.setStyleSheet("background-color: #0e0f14; border: 1px solid #1c1d27; border-radius: 6px;")
+        left_panel.setStyleSheet("background-color: #0d0e14; border: 1px solid #1e2029; border-radius: 6px;")
         left_layout = QVBoxLayout(left_panel)
-        left_layout.setContentsMargins(8, 6, 8, 6)
-        left_layout.setSpacing(4)
-
-        self.lbl_desc = QLabel()
-        self.lbl_desc.setWordWrap(True)
-        self.lbl_desc.setStyleSheet("color: #9ca3af; font-size: 11px; padding: 4px; background: #0a0b0e; border-radius: 4px; font-family: 'Consolas', monospace;")
-        left_layout.addWidget(self.lbl_desc)
+        left_layout.setContentsMargins(8, 8, 8, 8)
+        left_layout.setSpacing(6)
 
         self.graph_view = PatternGraphView()
         left_layout.addWidget(self.graph_view, 2)
-
-        lbl_console = QLabel("Telemetry Event Stream")
-        lbl_console.setStyleSheet("font-weight: 600; color: #6b7280; font-size: 10px; font-family: 'Consolas', monospace;")
-        left_layout.addWidget(lbl_console)
 
         self.txt_log = QTextEdit()
         self.txt_log.setReadOnly(True)
         self.txt_log.setStyleSheet("""
             QTextEdit {
-                background-color: #0a0b0e;
-                color: #d1d5db;
-                font-family: 'Consolas', monospace;
-                font-size: 10px;
-                border: 1px solid #1c1d27;
+                background-color: #090a0f;
+                color: #e2e8f0;
+                font-family: 'Cascadia Code', monospace;
+                font-size: 11px;
+                border: 1px solid #1e2029;
                 border-radius: 4px;
-                padding: 4px;
+                padding: 6px;
             }
         """)
-        self.txt_log.setMaximumHeight(95)
+        self.txt_log.setMaximumHeight(110)
         left_layout.addWidget(self.txt_log, 1)
 
         splitter.addWidget(left_panel)
 
         # Right Column: Implementation Code
         right_panel = QFrame()
-        right_panel.setStyleSheet("background-color: #0e0f14; border: 1px solid #1c1d27; border-radius: 6px;")
+        right_panel.setStyleSheet("background-color: #0d0e14; border: 1px solid #1e2029; border-radius: 6px;")
         right_layout = QVBoxLayout(right_panel)
-        right_layout.setContentsMargins(8, 6, 8, 6)
-        right_layout.setSpacing(4)
+        right_layout.setContentsMargins(8, 6, 8, 8)
+        right_layout.setSpacing(6)
 
         code_header = QHBoxLayout()
-        lbl_code = QLabel("Implementation")
-        lbl_code.setStyleSheet("font-weight: 600; color: #6b7280; font-size: 11px; font-family: 'Consolas', monospace;")
-        code_header.addWidget(lbl_code)
-        code_header.addStretch()
-
+        code_header.addWidget(QLabel("Language:"))
         self.cb_code_lang = QComboBox()
         self.cb_code_lang.addItem("Rust", "rust")
         self.cb_code_lang.addItem("TypeScript", "typescript")
         self.cb_code_lang.addItem("Go", "go")
         self.cb_code_lang.currentIndexChanged.connect(self.update_code_view)
         code_header.addWidget(self.cb_code_lang)
+        code_header.addStretch()
 
         right_layout.addLayout(code_header)
 
@@ -197,15 +181,14 @@ class PatternLabTab(QWidget):
         self.current_pattern_idx = idx
         pattern = PATTERNS[idx]
 
-        self.lbl_desc.setText(f"[PROBLEM] {pattern.problem}\n[ARCHITECTURE] {pattern.solution}")
         self.update_code_view()
         self.update_graph()
-        self.log(f"Initialized pattern: {pattern.name}")
+        self.log(f"Initialized {pattern.name}")
 
     def update_code_view(self):
         pattern = PATTERNS[self.current_pattern_idx]
         lang_id = self.cb_code_lang.currentData()
-        code = pattern.code_implementations.get(lang_id, "// Implementation in progress...")
+        code = pattern.code_implementations.get(lang_id, "// Implementation not found")
         self.code_editor.set_language(lang_id)
         self.code_editor.setPlainText(code)
 
@@ -225,36 +208,36 @@ class PatternLabTab(QWidget):
         pattern = PATTERNS[self.current_pattern_idx]
         if pattern.id == "circuit_breaker":
             if self.cb_state == "OPEN":
-                self.log("[FAST_FAIL] Circuit OPEN; call rejected before network dispatch.")
+                self.log("[FAST_FAIL] Circuit OPEN; call rejected.")
             else:
                 self.cb_state = "CLOSED"
                 self.cb_failures = 0
-                self.log(f"[HTTP 200] Target invocation succeeded. State={self.cb_state}")
+                self.log(f"[HTTP 200] Downstream OK. Circuit State={self.cb_state}")
                 self.update_graph()
         else:
-            self.log("[WORKER_POOL] Job enqueued; worker dequeued and settled task.")
+            self.log("[WORKER_POOL] Job completed.")
 
     def simulate_failure(self):
         pattern = PATTERNS[self.current_pattern_idx]
         if pattern.id == "circuit_breaker":
             if self.cb_state == "OPEN":
-                self.log("[FAST_FAIL] Circuit is already OPEN; short-circuiting to fallback.")
+                self.log("[FAST_FAIL] Circuit already OPEN; falling back.")
                 return
 
             self.cb_failures += 1
-            self.log(f"[HTTP 500] Fault detected ({self.cb_failures}/{self.cb_threshold})")
+            self.log(f"[HTTP 500] Error detected ({self.cb_failures}/{self.cb_threshold})")
             
             if self.cb_failures >= self.cb_threshold:
                 self.cb_state = "OPEN"
-                self.log(">> THRESHOLD REACHED: Circuit tripped to OPEN state.")
+                self.log(">> Threshold reached: Circuit TRIPPED to OPEN.")
             self.update_graph()
         else:
-            self.log("[SUPERVISOR] Worker failure isolated.")
+            self.log("[WORKER_POOL] Worker fault isolated.")
 
     def simulate_reset(self):
         self.cb_state = "CLOSED"
         self.cb_failures = 0
-        self.log("State machine reset to CLOSED.")
+        self.log("Circuit state reset to CLOSED.")
         self.update_graph()
 
     def log(self, text):

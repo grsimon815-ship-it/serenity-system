@@ -22,7 +22,7 @@ class QSyntaxHighlighterPygments(QSyntaxHighlighter):
 
     def _init_formats(self):
         self.formats = {}
-        # System DLC Purple / Neon cyber code palette
+        # Clean high-contrast code palette
         theme_map = {
             "Keyword": "#c084fc",
             "Keyword.Type": "#e879f9",
@@ -31,9 +31,9 @@ class QSyntaxHighlighterPygments(QSyntaxHighlighter):
             "Name.Builtin": "#22d3ee",
             "String": "#4ade80",
             "Number": "#fb923c",
-            "Comment": "#4b5563",
+            "Comment": "#64748b",
             "Operator": "#f472b6",
-            "Punctuation": "#94a3b8",
+            "Punctuation": "#cbd5e1",
             "Generic": "#f87171"
         }
         for token_key, color_code in theme_map.items():
@@ -68,7 +68,7 @@ class QSyntaxHighlighterPygments(QSyntaxHighlighter):
                     self.setFormat(index, length, matched_fmt)
                 else:
                     default_fmt = QTextCharFormat()
-                    default_fmt.setForeground(QColor("#cbd5e1"))
+                    default_fmt.setForeground(QColor("#e2e8f0"))
                     self.setFormat(index, length, default_fmt)
                 index += length
         except Exception:
@@ -93,18 +93,17 @@ class PolyglotCodeEditor(QPlainTextEdit):
         self.language = language
         self.setReadOnly(read_only)
         
-        # Configure Font
-        font = QFont("Consolas", 11)
+        # High legibility code font
+        font = QFont("Cascadia Code", 12)
         font.setStyleHint(QFont.StyleHint.Monospace)
         self.setFont(font)
         
-        # Styling matching System DLC editor
         self.setStyleSheet("""
             QPlainTextEdit {
-                background-color: #0b0d13;
+                background-color: #0d0e14;
                 color: #e2e8f0;
-                border: 1px solid #171b26;
-                border-radius: 7px;
+                border: 1px solid #1e2029;
+                border-radius: 6px;
                 padding: 6px;
                 selection-background-color: #5b21b6;
                 selection-color: #ffffff;
@@ -135,7 +134,7 @@ class PolyglotCodeEditor(QPlainTextEdit):
         while max_num >= 10:
             max_num //= 10
             digits += 1
-        space = 18 + self.fontMetrics().horizontalAdvance('9') * digits
+        space = 20 + self.fontMetrics().horizontalAdvance('9') * digits
         return space
 
     def update_line_number_area_width(self, _):
@@ -158,7 +157,7 @@ class PolyglotCodeEditor(QPlainTextEdit):
         extra_selections = []
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
-            line_color = QColor("#141824")
+            line_color = QColor("#171922")
             selection.format.setBackground(line_color)
             selection.format.setProperty(QTextFormat.Property.FullWidthSelection, True)
             selection.cursor = self.textCursor()
@@ -168,7 +167,7 @@ class PolyglotCodeEditor(QPlainTextEdit):
 
     def line_number_area_paint_event(self, event):
         painter = QPainter(self.line_number_area)
-        painter.fillRect(event.rect(), QColor("#08090d"))
+        painter.fillRect(event.rect(), QColor("#090a0f"))
 
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
@@ -178,7 +177,7 @@ class PolyglotCodeEditor(QPlainTextEdit):
         while block.isValid() and top <= event.rect().bottom():
             if block.isVisible() and bottom >= event.rect().top():
                 number = str(block_number + 1)
-                painter.setPen(QColor("#3d4455"))
+                painter.setPen(QColor("#475569"))
                 painter.drawText(0, top, self.line_number_area.width() - 8, self.fontMetrics().height(),
                                  Qt.AlignmentFlag.AlignRight, number)
 
