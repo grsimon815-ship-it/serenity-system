@@ -1,141 +1,138 @@
 """
-SystemDLC Design System & Dark Theme for PolyglotForge
-Inspired by System Client (systemdlc.com):
-- Deep Obsidian / Void Black palette (#090a0f, #0f1118, #151822)
-- Electric Amethyst & Violet accents (#7c3aed, #8b5cf6, #a855f7)
-- Cyan & Emerald telemetry glows (#06b6d4, #10b981)
-- Tight, responsive, pro-client layout (Zero AI-slop, clean minimalism)
+SystemDLC Professional Dark Theme
+Pure utilitarian dark palette:
+- Background: #0a0b0e (Obsidian / Pitch Black)
+- Surface: #111217 (Charcoal Card)
+- Elevated / Focus: #171821
+- Border: #1f212c (Hairline 1px)
+- Border Focus: #7c3aed (System DLC Amethyst)
+- Text Primary: #e1e4ea
+- Text Muted: #6b7280
+- Accent: #7c3aed
 """
 
 SYSTEM_DLC_THEME = """
-/* Global Window & Background */
 QMainWindow, QWidget#CentralWidget {
-    background-color: #08090d;
-    color: #e2e8f0;
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif;
-    font-size: 13px;
+    background-color: #0a0b0e;
+    color: #d1d5db;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 12px;
 }
 
 /* Left Sidebar */
 QFrame#SidebarFrame {
-    background-color: #0b0d13;
-    border-right: 1px solid #161922;
+    background-color: #0e0f14;
+    border-right: 1px solid #1c1d26;
 }
 
-/* Sidebar Logo & Branding */
 QLabel#LogoTitle {
-    font-size: 17px;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: 1.5px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #f3f4f6;
+    letter-spacing: 1px;
 }
 QLabel#LogoSubtitle {
     font-size: 10px;
-    font-weight: 700;
-    color: #8b5cf6;
-    letter-spacing: 2px;
+    font-weight: 600;
+    color: #7c3aed;
+    letter-spacing: 1px;
 }
 QLabel#SidebarCategoryHeader {
     font-size: 10px;
-    font-weight: 800;
-    color: #475069;
-    letter-spacing: 1.2px;
-    padding-top: 12px;
-    padding-bottom: 4px;
-    padding-left: 8px;
+    font-weight: 700;
+    color: #4b5263;
+    letter-spacing: 0.8px;
+    padding-top: 10px;
+    padding-bottom: 2px;
+    padding-left: 6px;
 }
 
 /* Sidebar Navigation Buttons */
 QPushButton.SidebarNavBtn {
     background-color: transparent;
-    color: #8f9bb3;
+    color: #8b92a4;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     text-align: left;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 600;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 500;
 }
 QPushButton.SidebarNavBtn:hover {
-    background-color: #131620;
-    color: #f1f5f9;
+    background-color: #15161f;
+    color: #e5e7eb;
 }
 QPushButton.SidebarNavBtn:checked, QPushButton.SidebarNavBtn.Active {
-    background-color: #181b26;
-    color: #a855f7;
-    border-left: 3px solid #8b5cf6;
-    border-radius: 6px;
-    font-weight: 700;
+    background-color: #181924;
+    color: #f3f4f6;
+    border-left: 2px solid #7c3aed;
+    font-weight: 600;
 }
 
 /* Telemetry Card in Sidebar Footer */
 QFrame#TelemetryFrame {
-    background-color: #0e111a;
-    border: 1px solid #1a1e2b;
-    border-radius: 8px;
-    padding: 8px;
+    background-color: #12131a;
+    border: 1px solid #1f202b;
+    border-radius: 6px;
+    padding: 6px;
 }
 QLabel#TelemetryText {
     font-size: 10px;
-    color: #64748b;
+    color: #6b7280;
     font-family: 'Consolas', monospace;
+    line-height: 1.3;
 }
 
-/* Header Top Bar */
+/* Header Bar */
 QFrame#TopHeaderBar {
-    background-color: #0b0d13;
-    border-bottom: 1px solid #161922;
-    padding: 8px 16px;
+    background-color: #0e0f14;
+    border-bottom: 1px solid #1c1d26;
 }
 QLineEdit#SearchBar {
-    background-color: #12151e;
-    color: #f8fafc;
-    border: 1px solid #1e2330;
-    border-radius: 7px;
-    padding: 7px 14px;
+    background-color: #12131a;
+    color: #e5e7eb;
+    border: 1px solid #1f212c;
+    border-radius: 5px;
+    padding: 5px 10px;
     font-size: 12px;
 }
 QLineEdit#SearchBar:focus {
     border: 1px solid #7c3aed;
-    background-color: #151824;
+    background-color: #161722;
 }
 
-/* Cards & Surface Containers */
+/* General Panels & Cards */
 QFrame.DlcCard {
-    background-color: #0e1119;
-    border: 1px solid #181b26;
-    border-radius: 9px;
-}
-QFrame.DlcCard:hover {
-    border: 1px solid #232838;
+    background-color: #111218;
+    border: 1px solid #1c1d27;
+    border-radius: 6px;
 }
 
 /* Buttons */
 QPushButton {
-    background-color: #141722;
-    color: #e2e8f0;
-    border: 1px solid #202534;
-    padding: 7px 14px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 12px;
+    background-color: #15161e;
+    color: #d1d5db;
+    border: 1px solid #232532;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
 }
 QPushButton:hover {
-    background-color: #1a1e2c;
-    border-color: #3b435b;
+    background-color: #1c1e2a;
+    border-color: #353849;
     color: #ffffff;
 }
 QPushButton:pressed {
-    background-color: #11131c;
+    background-color: #13141c;
 }
-QPushButton.PrimaryBtn, QPushButton.DlcAccentBtn {
+QPushButton.PrimaryBtn {
     background-color: #6d28d9;
     border: 1px solid #7c3aed;
     color: #ffffff;
 }
-QPushButton.PrimaryBtn:hover, QPushButton.DlcAccentBtn:hover {
+QPushButton.PrimaryBtn:hover {
     background-color: #7c3aed;
-    border-color: #8b5cf6;
 }
 QPushButton.SuccessBtn {
     background-color: #065f46;
@@ -146,23 +143,22 @@ QPushButton.SuccessBtn:hover {
     background-color: #059669;
 }
 QPushButton.DangerBtn {
-    background-color: #991b1b;
-    border: 1px solid #b91c1c;
+    background-color: #881337;
+    border: 1px solid #be123c;
     color: #ffffff;
 }
 QPushButton.DangerBtn:hover {
-    background-color: #b91c1c;
+    background-color: #be123c;
 }
 
 /* ComboBox */
 QComboBox {
-    background-color: #12151e;
-    border: 1px solid #1f2331;
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: #f1f5f9;
-    font-size: 12px;
-    font-weight: 500;
+    background-color: #12131a;
+    border: 1px solid #1f212c;
+    border-radius: 4px;
+    padding: 4px 8px;
+    color: #e5e7eb;
+    font-size: 11px;
 }
 QComboBox:hover {
     border-color: #7c3aed;
@@ -170,29 +166,28 @@ QComboBox:hover {
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 24px;
-    border-left: 1px solid #1f2331;
+    width: 20px;
+    border-left: 1px solid #1f212c;
 }
 QComboBox QAbstractItemView {
-    background-color: #0e111a;
-    border: 1px solid #1f2331;
+    background-color: #12131a;
+    border: 1px solid #232532;
     selection-background-color: #5b21b6;
     selection-color: #ffffff;
-    color: #e2e8f0;
-    padding: 4px;
+    color: #e5e7eb;
+    padding: 2px;
 }
 
 /* ScrollBars */
 QScrollBar:vertical {
-    background: #090a0f;
-    width: 8px;
+    background: #0a0b0e;
+    width: 6px;
     margin: 0px;
-    border-radius: 4px;
 }
 QScrollBar::handle:vertical {
-    background: #1f2433;
-    min-height: 20px;
-    border-radius: 4px;
+    background: #232533;
+    min-height: 16px;
+    border-radius: 3px;
 }
 QScrollBar::handle:vertical:hover {
     background: #7c3aed;
@@ -201,15 +196,14 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     height: 0px;
 }
 QScrollBar:horizontal {
-    background: #090a0f;
-    height: 8px;
+    background: #0a0b0e;
+    height: 6px;
     margin: 0px;
-    border-radius: 4px;
 }
 QScrollBar::handle:horizontal {
-    background: #1f2433;
-    min-width: 20px;
-    border-radius: 4px;
+    background: #232533;
+    min-width: 16px;
+    border-radius: 3px;
 }
 QScrollBar::handle:horizontal:hover {
     background: #7c3aed;
@@ -220,10 +214,11 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
 
 /* Status Bar */
 QStatusBar {
-    background-color: #06070a;
-    color: #64748b;
-    border-top: 1px solid #141620;
+    background-color: #0b0c10;
+    color: #6b7280;
+    border-top: 1px solid #181922;
     font-size: 11px;
     padding: 2px 8px;
+    font-family: 'Consolas', monospace;
 }
 """

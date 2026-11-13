@@ -14,19 +14,18 @@ class MemoryVisualizerWidget(QGraphicsView):
         super().__init__(parent)
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
-        self.setBackgroundBrush(QBrush(QColor("#08090d")))
+        self.setBackgroundBrush(QBrush(QColor("#0a0b0e")))
         self.setRenderHint(self.renderHints())
-        self.setStyleSheet("border: 1px solid #181b26; border-radius: 9px;")
+        self.setStyleSheet("border: 1px solid #1c1d27; border-radius: 6px;")
 
     def render_step(self, step):
         self.scene.clear()
         if not step:
             return
 
-        # Draw Section Headers
-        font_header = QFont("Segoe UI", 12, QFont.Weight.Bold)
-        font_box = QFont("Consolas", 10)
-        font_sub = QFont("Segoe UI", 9)
+        font_header = QFont("Consolas", 10, QFont.Weight.Bold)
+        font_box = QFont("Consolas", 9)
+        font_sub = QFont("Consolas", 8)
 
         # 1. Stack Column
         lbl_stack = self.scene.addText("STACK (Call Frames)", font_header)
@@ -34,64 +33,65 @@ class MemoryVisualizerWidget(QGraphicsView):
         lbl_stack.setPos(20, 10)
 
         # 2. Heap Column
-        lbl_heap = self.scene.addText("HEAP (Dynamic Store)", font_header)
+        lbl_heap = self.scene.addText("HEAP (Dynamic Allocations)", font_header)
         lbl_heap.setDefaultTextColor(QColor("#a855f7"))
         lbl_heap.setPos(380, 10)
 
         # Divider line
-        pen_divider = QPen(QColor("#1e293b"), 1, Qt.PenStyle.DashLine)
+        pen_divider = QPen(QColor("#1c1d27"), 1, Qt.PenStyle.DashLine)
         self.scene.addLine(340, 10, 340, 500, pen_divider)
 
         stack_addr_map = {}
         heap_addr_map = {}
 
         # Render Stack Frames
-        y_cursor = 45
+        y_cursor = 40
         for frame in step.stack:
-            frame_title = self.scene.addText(f"▼ {frame.func_name}", font_sub)
-            frame_title.setDefaultTextColor(QColor("#94a3b8"))
+            frame_title = self.scene.addText(f">> {frame.func_name}", font_sub)
+            frame_title.setDefaultTextColor(QColor("#6b7280"))
             frame_title.setPos(25, y_cursor)
-            y_cursor += 25
+            y_cursor += 22
 
             for var in frame.variables:
-                rect = self.scene.addRect(25, y_cursor, 280, 48, 
-                                          QPen(QColor(var.color_hex), 1.5), 
-                                          QBrush(QColor("#0f172a")))
-                stack_addr_map[var.address] = (25 + 280, y_cursor + 24)
+                border_col = QColor(var.color_hex if not var.is_freed else "#ef4444")
+                self.scene.addRect(25, y_cursor, 280, 44, 
+                                  QPen(border_col, 1.2), 
+                                  QBrush(QColor("#111218")))
+                stack_addr_map[var.address] = (25 + 280, y_cursor + 22)
 
                 t_var = self.scene.addText(f"{var.label} [{var.address}]", font_box)
-                t_var.setDefaultTextColor(QColor("#f8fafc"))
-                t_var.setPos(32, y_cursor + 2)
+                t_var.setDefaultTextColor(QColor("#e5e7eb"))
+                t_var.setPos(30, y_cursor + 2)
 
-                t_val = self.scene.addText(f"Val: {var.value} ({var.size_bytes}B)", font_sub)
-                t_val.setDefaultTextColor(QColor("#94a3b8" if not var.is_freed else "#ef4444"))
-                t_val.setPos(32, y_cursor + 22)
+                t_val = self.scene.addText(f"Value: {var.value} ({var.size_bytes}B)", font_sub)
+                t_val.setDefaultTextColor(QColor("#9ca3af" if not var.is_freed else "#ef4444"))
+                t_val.setPos(30, y_cursor + 20)
 
-                y_cursor += 58
+                y_cursor += 50
 
         # Render Heap Blocks
-        y_heap = 45
+        y_heap = 40
         for block in step.heap:
-            border_color = QColor(block.color_hex) if not block.is_freed else QColor("#ef4444")
-            bg_color = QColor("#0f172a") if not block.is_freed else QColor("#1e1015")
+            border_color = QColor(block.color_hex if not block.is_freed else "#ef4444")
+            bg_color = QColor("#111218" if not block.is_freed else "#170f11")
             
-            self.scene.addRect(380, y_heap, 320, 56, 
-                              QPen(border_color, 1.5), 
+            self.scene.addRect(380, y_heap, 320, 48, 
+                              QPen(border_color, 1.2), 
                               QBrush(bg_color))
-            heap_addr_map[block.address] = (380, y_heap + 28)
+            heap_addr_map[block.address] = (380, y_heap + 24)
 
             t_hb = self.scene.addText(f"{block.label} @ {block.address}", font_box)
-            t_hb.setDefaultTextColor(QColor("#f8fafc" if not block.is_freed else "#ef4444"))
-            t_hb.setPos(388, y_heap + 3)
+            t_hb.setDefaultTextColor(QColor("#e5e7eb" if not block.is_freed else "#ef4444"))
+            t_hb.setPos(386, y_heap + 2)
 
             t_val = self.scene.addText(f"Payload: {block.value} | Size: {block.size_bytes}B", font_sub)
-            t_val.setDefaultTextColor(QColor("#cbd5e1" if not block.is_freed else "#94a3b8"))
-            t_val.setPos(388, y_heap + 26)
+            t_val.setDefaultTextColor(QColor("#9ca3af" if not block.is_freed else "#6b7280"))
+            t_val.setPos(386, y_heap + 22)
 
-            y_heap += 68
+            y_heap += 56
 
-        # Draw Pointer Arrows (Stack -> Heap or Stack -> Stack)
-        pen_arrow = QPen(QColor("#10b981"), 2)
+        # Draw Pointer Arrows (Stack -> Heap)
+        pen_arrow = QPen(QColor("#7c3aed"), 1.5)
         for frame in step.stack:
             for var in frame.variables:
                 if var.target_address and var.target_address in heap_addr_map:
@@ -99,18 +99,16 @@ class MemoryVisualizerWidget(QGraphicsView):
                     p2 = heap_addr_map.get(var.target_address)
                     if p1 and p2:
                         self.scene.addLine(p1[0], p1[1], p2[0], p2[1], pen_arrow)
-                        # Arrow head
                         self._draw_arrow_head(p1, p2, pen_arrow)
 
     def _draw_arrow_head(self, p1, p2, pen):
-        # Draw small polygon triangle at p2
         x, y = p2
         poly = QPolygonF([
             QPointF(x, y),
-            QPointF(x - 8, y - 5),
-            QPointF(x - 8, y + 5)
+            QPointF(x - 6, y - 4),
+            QPointF(x - 6, y + 4)
         ])
-        self.scene.addPolygon(poly, pen, QBrush(QColor("#10b981")))
+        self.scene.addPolygon(poly, pen, QBrush(QColor("#7c3aed")))
 
 
 class MemorySimulatorTab(QWidget):
@@ -123,17 +121,19 @@ class MemorySimulatorTab(QWidget):
 
     def _init_ui(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(16, 16, 16, 16)
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(16, 14, 16, 14)
+        main_layout.setSpacing(10)
 
         # Control Bar
         top_bar = QFrame()
-        top_bar.setStyleSheet("background-color: #0e1119; border: 1px solid #181b26; border-radius: 9px; padding: 6px;")
+        top_bar.setProperty("class", "DlcCard")
+        top_bar.setStyleSheet("background-color: #0e0f14; border: 1px solid #1c1d27; border-radius: 6px; padding: 4px;")
         top_layout = QHBoxLayout(top_bar)
-        top_layout.setContentsMargins(8, 6, 8, 6)
+        top_layout.setContentsMargins(8, 4, 8, 4)
+        top_layout.setSpacing(8)
 
         lbl_scenario = QLabel("Scenario:")
-        lbl_scenario.setStyleSheet("font-weight: 700; color: #f8fafc;")
+        lbl_scenario.setStyleSheet("font-weight: 600; color: #9ca3af; font-size: 11px;")
         top_layout.addWidget(lbl_scenario)
 
         self.cb_scenario = QComboBox()
@@ -142,39 +142,40 @@ class MemorySimulatorTab(QWidget):
         self.cb_scenario.currentIndexChanged.connect(self.on_scenario_changed)
         top_layout.addWidget(self.cb_scenario, 2)
 
-        top_layout.addSpacing(16)
+        top_layout.addSpacing(12)
 
-        self.btn_prev = QPushButton("◀ Prev Step")
+        self.btn_prev = QPushButton("Prev Step")
         self.btn_prev.clicked.connect(self.prev_step)
         top_layout.addWidget(self.btn_prev)
 
         self.lbl_step_counter = QLabel("Step 1 / 4")
-        self.lbl_step_counter.setStyleSheet("font-weight: 600; color: #38bdf8; min-width: 80px; text-align: center;")
+        self.lbl_step_counter.setStyleSheet("font-family: 'Consolas', monospace; color: #a855f7; font-size: 11px;")
         top_layout.addWidget(self.lbl_step_counter)
 
-        self.btn_next = QPushButton("Next Step ▶")
+        self.btn_next = QPushButton("Next Step")
         self.btn_next.setProperty("class", "PrimaryBtn")
         self.btn_next.clicked.connect(self.next_step)
         top_layout.addWidget(self.btn_next)
 
-        self.btn_reset = QPushButton("Reset ⟲")
+        self.btn_reset = QPushButton("Reset")
         self.btn_reset.clicked.connect(self.reset_steps)
         top_layout.addWidget(self.btn_reset)
 
         main_layout.addWidget(top_bar)
 
-        # Body Splitter: Left (Code & Step Explanation) vs Right (Visual Diagram)
+        # Splitter: Left (Code & Step Explanation) vs Right (Visual Diagram)
         splitter = QSplitter(Qt.Orientation.Horizontal)
-        splitter.setHandleWidth(6)
+        splitter.setHandleWidth(4)
 
         # Left Column: Code & Step Note
         left_panel = QFrame()
-        left_panel.setStyleSheet("background-color: #0b1120; border: 1px solid #1e293b; border-radius: 8px;")
+        left_panel.setStyleSheet("background-color: #0e0f14; border: 1px solid #1c1d27; border-radius: 6px;")
         left_layout = QVBoxLayout(left_panel)
-        left_layout.setContentsMargins(10, 10, 10, 10)
+        left_layout.setContentsMargins(8, 6, 8, 6)
+        left_layout.setSpacing(4)
 
-        lbl_code_title = QLabel("Source Code Execution Flow")
-        lbl_code_title.setStyleSheet("font-weight: 700; color: #f8fafc;")
+        lbl_code_title = QLabel("Source Execution Flow")
+        lbl_code_title.setStyleSheet("font-weight: 600; color: #6b7280; font-size: 11px; font-family: 'Consolas', monospace;")
         left_layout.addWidget(lbl_code_title)
 
         self.code_editor = PolyglotCodeEditor(read_only=True)
@@ -182,21 +183,22 @@ class MemorySimulatorTab(QWidget):
 
         # Step Detail Box
         self.step_box = QFrame()
-        self.step_box.setStyleSheet("background-color: #080c14; border: 1px solid #1e293b; border-radius: 6px; padding: 8px;")
+        self.step_box.setStyleSheet("background-color: #0a0b0e; border: 1px solid #1c1d27; border-radius: 4px; padding: 6px;")
         step_layout = QVBoxLayout(self.step_box)
+        step_layout.setSpacing(2)
 
         self.lbl_action = QLabel()
-        self.lbl_action.setStyleSheet("font-weight: 700; color: #10b981; font-size: 13px;")
+        self.lbl_action.setStyleSheet("font-weight: 700; color: #e5e7eb; font-size: 11px; font-family: 'Consolas', monospace;")
         step_layout.addWidget(self.lbl_action)
 
         self.lbl_explanation = QLabel()
         self.lbl_explanation.setWordWrap(True)
-        self.lbl_explanation.setStyleSheet("color: #cbd5e1; font-size: 11px;")
+        self.lbl_explanation.setStyleSheet("color: #9ca3af; font-size: 11px;")
         step_layout.addWidget(self.lbl_explanation)
 
         self.lbl_notes = QLabel()
         self.lbl_notes.setWordWrap(True)
-        self.lbl_notes.setStyleSheet("color: #94a3b8; font-size: 10px; font-style: italic;")
+        self.lbl_notes.setStyleSheet("color: #6b7280; font-size: 10px; font-family: 'Consolas', monospace;")
         step_layout.addWidget(self.lbl_notes)
 
         left_layout.addWidget(self.step_box)
@@ -235,11 +237,10 @@ class MemorySimulatorTab(QWidget):
 
         step = scenario.steps[self.current_step_idx]
         self.lbl_step_counter.setText(f"Step {self.current_step_idx + 1} / {total_steps}")
-        self.lbl_action.setText(f"Action: {step.action_title} (Line {step.line_number})")
+        self.lbl_action.setText(f">> {step.action_title} (Line {step.line_number})")
         self.lbl_explanation.setText(step.explanation)
-        self.lbl_notes.setText(f"Under the hood: {step.notes}")
+        self.lbl_notes.setText(f"Underlying layout: {step.notes}")
 
-        # Render diagram
         self.visualizer.render_step(step)
 
     def next_step(self):
